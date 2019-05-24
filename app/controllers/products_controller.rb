@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
-
+  before_action :set_product, only: [:show, :edit, :update, :destroy, :pay]
   # GET /products
   # GET /products.json
   def index
@@ -59,6 +59,17 @@ class ProductsController < ApplicationController
       format.html { redirect_to products_url, notice: 'Product was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def pay
+    Payjp.api_key = 'sk_test_c62fade9d045b54cd76d7036'
+    #byebug
+    charge = Payjp::Charge.create(
+      amount: @product.price,
+      card: params['payjp-token'],
+      currency: 'jpy',
+    )
+    redirect_to @product, notice: 'ありがとうございました。'
   end
 
   private
